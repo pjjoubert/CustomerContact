@@ -34,7 +34,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.txbCustID = new System.Windows.Forms.TextBox();
             this.txbCustName = new System.Windows.Forms.TextBox();
             this.txbLat = new System.Windows.Forms.TextBox();
             this.txbLong = new System.Windows.Forms.TextBox();
@@ -53,10 +52,11 @@
             this.btnNewContact = new System.Windows.Forms.Button();
             this.btnSaveContact = new System.Windows.Forms.Button();
             this.gbCustomer = new System.Windows.Forms.GroupBox();
-            this.gbContact = new System.Windows.Forms.GroupBox();
-            this.lblContactCount = new System.Windows.Forms.Label();
             this.btnCustDelete = new System.Windows.Forms.Button();
+            this.gbContact = new System.Windows.Forms.GroupBox();
             this.btnContDelete = new System.Windows.Forms.Button();
+            this.lblContactCount = new System.Windows.Forms.Label();
+            this.lblCustID = new System.Windows.Forms.Label();
             this.gbCustomer.SuspendLayout();
             this.gbContact.SuspendLayout();
             this.SuspendLayout();
@@ -120,17 +120,10 @@
             this.label4.TabIndex = 5;
             this.label4.Text = "Longitude";
             // 
-            // txbCustID
-            // 
-            this.txbCustID.CausesValidation = false;
-            this.txbCustID.Location = new System.Drawing.Point(94, 82);
-            this.txbCustID.Name = "txbCustID";
-            this.txbCustID.Size = new System.Drawing.Size(187, 20);
-            this.txbCustID.TabIndex = 1;
-            // 
             // txbCustName
             // 
             this.txbCustName.Location = new System.Drawing.Point(94, 109);
+            this.txbCustName.MaxLength = 200;
             this.txbCustName.Name = "txbCustName";
             this.txbCustName.Size = new System.Drawing.Size(187, 20);
             this.txbCustName.TabIndex = 2;
@@ -278,6 +271,7 @@
             // 
             // gbCustomer
             // 
+            this.gbCustomer.Controls.Add(this.lblCustID);
             this.gbCustomer.Controls.Add(this.btnCustDelete);
             this.gbCustomer.Controls.Add(this.txbCustName);
             this.gbCustomer.Controls.Add(this.cbCustomers);
@@ -286,7 +280,6 @@
             this.gbCustomer.Controls.Add(this.label2);
             this.gbCustomer.Controls.Add(this.label3);
             this.gbCustomer.Controls.Add(this.label4);
-            this.gbCustomer.Controls.Add(this.txbCustID);
             this.gbCustomer.Controls.Add(this.txbLat);
             this.gbCustomer.Controls.Add(this.txbLong);
             this.gbCustomer.Controls.Add(this.btnSave);
@@ -296,6 +289,16 @@
             this.gbCustomer.TabIndex = 19;
             this.gbCustomer.TabStop = false;
             this.gbCustomer.Text = "Customer";
+            // 
+            // btnCustDelete
+            // 
+            this.btnCustDelete.Location = new System.Drawing.Point(25, 190);
+            this.btnCustDelete.Name = "btnCustDelete";
+            this.btnCustDelete.Size = new System.Drawing.Size(75, 23);
+            this.btnCustDelete.TabIndex = 6;
+            this.btnCustDelete.Text = "Delete";
+            this.btnCustDelete.UseVisualStyleBackColor = true;
+            this.btnCustDelete.Click += new System.EventHandler(this.btnCustDelete_Click);
             // 
             // gbContact
             // 
@@ -321,25 +324,6 @@
             this.gbContact.TabStop = false;
             this.gbContact.Text = "Customer Contact";
             // 
-            // lblContactCount
-            // 
-            this.lblContactCount.AutoSize = true;
-            this.lblContactCount.Location = new System.Drawing.Point(207, 185);
-            this.lblContactCount.Name = "lblContactCount";
-            this.lblContactCount.Size = new System.Drawing.Size(10, 13);
-            this.lblContactCount.TabIndex = 19;
-            this.lblContactCount.Text = "-";
-            // 
-            // btnCustDelete
-            // 
-            this.btnCustDelete.Location = new System.Drawing.Point(25, 190);
-            this.btnCustDelete.Name = "btnCustDelete";
-            this.btnCustDelete.Size = new System.Drawing.Size(75, 23);
-            this.btnCustDelete.TabIndex = 6;
-            this.btnCustDelete.Text = "Delete";
-            this.btnCustDelete.UseVisualStyleBackColor = true;
-            this.btnCustDelete.Click += new System.EventHandler(this.btnCustDelete_Click);
-            // 
             // btnContDelete
             // 
             this.btnContDelete.Location = new System.Drawing.Point(124, 230);
@@ -349,6 +333,25 @@
             this.btnContDelete.Text = "Delete";
             this.btnContDelete.UseVisualStyleBackColor = true;
             this.btnContDelete.Click += new System.EventHandler(this.btnContDelete_Click);
+            // 
+            // lblContactCount
+            // 
+            this.lblContactCount.AutoSize = true;
+            this.lblContactCount.Location = new System.Drawing.Point(207, 185);
+            this.lblContactCount.Name = "lblContactCount";
+            this.lblContactCount.Size = new System.Drawing.Size(10, 13);
+            this.lblContactCount.TabIndex = 19;
+            this.lblContactCount.Text = "-";
+            // 
+            // lblCustID
+            // 
+            this.lblCustID.AutoSize = true;
+            this.lblCustID.Location = new System.Drawing.Point(93, 79);
+            this.lblCustID.Name = "lblCustID";
+            this.lblCustID.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this.lblCustID.Size = new System.Drawing.Size(10, 23);
+            this.lblCustID.TabIndex = 7;
+            this.lblCustID.Text = "-";
             // 
             // Form1
             // 
@@ -376,7 +379,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox txbCustID;
         private System.Windows.Forms.TextBox txbCustName;
         private System.Windows.Forms.TextBox txbLat;
         private System.Windows.Forms.TextBox txbLong;
@@ -399,6 +401,7 @@
         private System.Windows.Forms.Label lblContactCount;
         private System.Windows.Forms.Button btnCustDelete;
         private System.Windows.Forms.Button btnContDelete;
+        private System.Windows.Forms.Label lblCustID;
     }
 }
 

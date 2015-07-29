@@ -25,7 +25,8 @@ namespace CustomerContactForm
         private void Form1_Load(object sender, EventArgs e)
         {
             contactList = new List<Classes.CustomerContact>();
-            currentContactIndex = 0;
+            currentContactIndex = -1;
+            currentCustomerID = -1;
             RefreshCustomerDatasource();
         }
 
@@ -42,7 +43,7 @@ namespace CustomerContactForm
             }
             catch (Exception ex)
             {
-                //log error
+                ShowMessage("Error refreshing customer datasource", ex);
             }
         }
 
@@ -50,7 +51,7 @@ namespace CustomerContactForm
         {
             currentCustomerID = -1; //set customer ID to -1 to indicate new customer
             clearContacts();
-            txbCustID.Text = "";
+            lblCustID.Text = "";
             txbCustName.Text = "";
             txbLat.Text = "";
             txbLong.Text = "";
@@ -110,13 +111,14 @@ namespace CustomerContactForm
                         {
                             context.Customers.Add(customer);
                             context.SaveChanges();
-                            txbCustID.Text = customer.ID.ToString();
+                            lblCustID.Text = customer.ID.ToString();
                             currentCustomerID = customer.ID;
                         }
+
                     }
                     catch (Exception ex)
                     {
-                        //log error
+                        ShowMessage("Error saving customer to datasource", ex);
                     }
                 }
                 #endregion
@@ -147,7 +149,7 @@ namespace CustomerContactForm
                     }
                     catch (Exception ex)
                     {
-                        //log error
+                        ShowMessage("Error updating customer data", ex);
                     }
                 }
                 #endregion
@@ -169,7 +171,7 @@ namespace CustomerContactForm
 
                     if (custResult != null)
                     {
-                        txbCustID.Text = custResult.ID.ToString();
+                        lblCustID.Text = custResult.ID.ToString();
                         txbCustName.Text = custResult.Name;
                         txbLat.Text = custResult.Latitude.ToString();
                         txbLong.Text = custResult.Longitude.ToString();
@@ -182,37 +184,45 @@ namespace CustomerContactForm
             }
             catch (Exception ex)
             {
-
+                ShowMessage("Application error", ex);
             }
         }
 
         private void UpdateContacts(int customerID)
         {
-            using (var context = new Classes.CustomerContext())
+            try
             {
-                var contactResults = (from b in context.CustomerContacts where b.CustomerID == customerID select b).ToList();
-                if (contactResults.Count != 0)
+                using (var context = new Classes.CustomerContext())
                 {
-                    contactList = contactResults;
-                    currentContactIndex = 0;
+                    var contactResults = (from b in context.CustomerContacts where b.CustomerID == customerID select b).ToList();
+                    if (contactResults.Count != 0)
+                    {
+                        contactList = contactResults;
+                        currentContactIndex = 0;
 
-                    lblContactCount.Text = (currentContactIndex + 1).ToString();
-                    lblContactTotal.Text = " of " + contactList.Count().ToString();
-                    txbCustContName.Text = contactList[0].Name;
-                    txbCustContEmail.Text = contactList[0].Email;
-                    txbCustContNum.Text = contactList[0].ContactNumber.ToString();
+                        lblContactCount.Text = (currentContactIndex + 1).ToString();
+                        lblContactTotal.Text = " of " + contactList.Count().ToString();
+                        txbCustContName.Text = contactList[0].Name;
+                        txbCustContEmail.Text = contactList[0].Email;
+                        txbCustContNum.Text = contactList[0].ContactNumber.ToString();
+                    }
+                    else
+                    {
+                        currentContactIndex = -1;
+                        lblContactCount.Text = "0";
+                        lblContactTotal.Text = " of " + contactList.Count().ToString();
+
+                        txbCustContName.Text = "";
+                        txbCustContEmail.Text = "";
+                        txbCustContNum.Text = "";
+
+                        txbCustContName.Focus();
+                    }
                 }
-                else
-                {
-                    lblContactCount.Text = "1";
-                    lblContactTotal.Text = " of " + contactList.Count().ToString();
-
-                    txbCustContName.Text = "";
-                    txbCustContEmail.Text = "";
-                    txbCustContNum.Text = "";
-
-                    txbCustContName.Focus();
-                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Error updating contacts", ex);
             }
         }
 
@@ -230,10 +240,15 @@ namespace CustomerContactForm
         private void btnFirst_Click(object sender, EventArgs e)
         {
             currentContactIndex = 0;
+            DisplayContactDetails();
+        }
+
+        private void DisplayContactDetails()
+        {
             lblContactCount.Text = (currentContactIndex + 1).ToString();
-            txbCustContName.Text = contactList[0].Name;
-            txbCustContEmail.Text = contactList[0].Email;
-            txbCustContNum.Text = contactList[0].ContactNumber.ToString();
+            txbCustContName.Text = contactList[currentContactIndex].Name;
+            txbCustContEmail.Text = contactList[currentContactIndex].Email;
+            txbCustContNum.Text = contactList[currentContactIndex].ContactNumber.ToString();
         }
 
         private void btnBackOne_Click(object sender, EventArgs e)
@@ -241,10 +256,7 @@ namespace CustomerContactForm
             if (currentContactIndex - 1 >= 0)
             {
                 currentContactIndex--;
-                lblContactCount.Text = (currentContactIndex + 1).ToString();
-                txbCustContName.Text = contactList[currentContactIndex].Name;
-                txbCustContEmail.Text = contactList[currentContactIndex].Email;
-                txbCustContNum.Text = contactList[currentContactIndex].ContactNumber.ToString();
+                DisplayContactDetails();
             }
         }
 
@@ -253,20 +265,14 @@ namespace CustomerContactForm
             if (currentContactIndex + 1 <= (contactList.Count - 1))
             {
                 currentContactIndex++;
-                lblContactCount.Text = (currentContactIndex + 1).ToString();
-                txbCustContName.Text = contactList[currentContactIndex].Name;
-                txbCustContEmail.Text = contactList[currentContactIndex].Email;
-                txbCustContNum.Text = contactList[currentContactIndex].ContactNumber.ToString();
+                DisplayContactDetails();
             }
         }
 
         private void btnLast_Click(object sender, EventArgs e)
         {
             currentContactIndex = contactList.Count - 1;
-            lblContactCount.Text = (currentContactIndex + 1).ToString();
-            txbCustContName.Text = contactList[(contactList.Count - 1)].Name;
-            txbCustContEmail.Text = contactList[(contactList.Count - 1)].Email;
-            txbCustContNum.Text = contactList[(contactList.Count - 1)].ContactNumber.ToString();
+            DisplayContactDetails();
         }
         #endregion
 
@@ -282,11 +288,9 @@ namespace CustomerContactForm
                         newContact.CustomerID = currentCustomerID;
                         newContact.Name = txbCustContName.Text;
                         newContact.Email = txbCustContEmail.Text;
-                        int contactNumber;
-                        if (int.TryParse(txbCustContNum.Text, out contactNumber))
-                        {
-                            newContact.ContactNumber = contactNumber;
-                        }
+                        
+                        newContact.ContactNumber = txbCustContNum.Text;
+                        
                         using (var context = new Classes.CustomerContext())
                         {
                             context.CustomerContacts.Add(newContact);
@@ -307,15 +311,14 @@ namespace CustomerContactForm
                     {
                         Classes.CustomerContact update = contactList[currentContactIndex];
                         update.Name = txbCustContName.Text;
-                        update.Email = txbCustContEmail.Text;
-                        int tempVal = 0;
-                        update.ContactNumber = int.TryParse(txbCustContNum.Text, out tempVal) ? tempVal : 0;
+                        update.Email = txbCustContEmail.Text;                        
+                        update.ContactNumber = txbCustContNum.Text;
                     }
                 }
             }
             catch (Exception ex)
             {
-                //log error
+                ShowMessage("Error saving customer contact", ex);
             }
         }
 
@@ -344,7 +347,7 @@ namespace CustomerContactForm
             }
             catch (Exception ex)
             {
-                //log error
+                ShowMessage("Error deleting customer", ex);
             }
         }
 
@@ -364,10 +367,16 @@ namespace CustomerContactForm
             }
             catch (Exception ex)
             {
-                //log error
+                ShowMessage("Error deleting customer contact", ex);
             }
         }
 
+
+        private void ShowMessage(string message, Exception ex)
+        {
+            MessageBox.Show(message + Environment.NewLine + Environment.NewLine + ex.Message);
+        }
+               
 
     }
 }
